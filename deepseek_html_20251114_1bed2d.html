@@ -1,1 +1,611 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Araç, Otel ve Yemek Galerisi</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            padding-bottom: 60px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #2c3e50, #4a6491);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .controls {
+            background-color: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .btn {
+            background: #4a6491;
+            color: white;
+            border: none;
+            padding: 0.7rem 1.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn:hover {
+            background: #3a5379;
+        }
+        
+        .btn-download {
+            background: #27ae60;
+        }
+        
+        .btn-download:hover {
+            background: #219653;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .add-photos-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .add-photos-btn:hover {
+            background: #2980b9;
+        }
+        
+        section {
+            background-color: white;
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+        
+        section:hover {
+            transform: translateY(-5px);
+        }
+        
+        h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #4a6491;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+            height: 200px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .gallery-item:hover {
+            transform: scale(1.03);
+        }
+        
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .gallery-item:hover img {
+            transform: scale(1.1);
+        }
+        
+        .gallery-item .delete-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(231, 76, 60, 0.8);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .gallery-item:hover .delete-btn {
+            opacity: 1;
+        }
+        
+        .placeholder {
+            background-color: #e9ecef;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            color: #6c757d;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .placeholder:hover {
+            background-color: #dee2e6;
+        }
+        
+        .placeholder i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        footer {
+            background-color: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+        }
+        
+        .modal h3 {
+            margin-bottom: 1rem;
+            color: #2c3e50;
+        }
+        
+        .modal p {
+            margin-bottom: 1.5rem;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+        
+        @media (max-width: 768px) {
+            .gallery {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            h2 {
+                font-size: 1.5rem;
+            }
+            
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Araç, Otel ve Yemek Galerisi</h1>
+            <p>Kendi resimlerinizi ekleyin ve HTML dosyası olarak kaydedin</p>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="controls">
+            <button class="btn btn-download" id="download-html-btn">
+                <i>💾</i> HTML Dosyasını İndir
+            </button>
+        </div>
+        
+        <section id="arac">
+            <div class="section-header">
+                <h2><i>🚗</i> Araç</h2>
+                <button class="add-photos-btn" data-section="arac">
+                    <i>📷</i> Fotoğraf Ekle
+                </button>
+            </div>
+            <div class="gallery" id="arac-gallery">
+                <!-- Resimler buraya eklenecek -->
+            </div>
+        </section>
+        
+        <section id="otel">
+            <div class="section-header">
+                <h2><i>🏨</i> Otel</h2>
+                <button class="add-photos-btn" data-section="otel">
+                    <i>📷</i> Fotoğraf Ekle
+                </button>
+            </div>
+            <div class="gallery" id="otel-gallery">
+                <!-- Resimler buraya eklenecek -->
+            </div>
+        </section>
+        
+        <section id="yemek">
+            <div class="section-header">
+                <h2><i>🍕</i> Yemek</h2>
+                <button class="add-photos-btn" data-section="yemek">
+                    <i>📷</i> Fotoğraf Ekle
+                </button>
+            </div>
+            <div class="gallery" id="yemek-gallery">
+                <!-- Resimler buraya eklenecek -->
+            </div>
+        </section>
+    </div>
+    
+    <div class="modal" id="download-modal">
+        <div class="modal-content">
+            <h3>HTML Dosyası Hazır!</h3>
+            <p>HTML dosyası başarıyla oluşturuldu. İndirmek için aşağıdaki butona tıklayın.</p>
+            <div class="modal-buttons">
+                <button class="btn" id="close-modal-btn">Kapat</button>
+                <a class="btn btn-download" id="actual-download-btn" download="galeri.html">
+                    <i>💾</i> HTML'yi İndir
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>&copy; 2023 Araç, Otel ve Yemek Galerisi</p>
+    </footer>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Öğeleri seç
+            const addPhotoBtns = document.querySelectorAll('.add-photos-btn');
+            const downloadHtmlBtn = document.getElementById('download-html-btn');
+            const downloadModal = document.getElementById('download-modal');
+            const closeModalBtn = document.getElementById('close-modal-btn');
+            const actualDownloadBtn = document.getElementById('actual-download-btn');
+            
+            // Yerel depolamadan resimleri yükle
+            loadImagesFromStorage();
+            
+            // Fotoğraf ekle butonlarına tıklama olayı ekle
+            addPhotoBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const section = this.getAttribute('data-section');
+                    const fileInput = document.createElement('input');
+                    fileInput.type = 'file';
+                    fileInput.accept = 'image/*';
+                    fileInput.multiple = true; // Çoklu dosya seçimi
+                    fileInput.style.display = 'none';
+                    
+                    fileInput.addEventListener('change', function(e) {
+                        const files = e.target.files;
+                        if (files.length > 0) {
+                            for (let i = 0; i < files.length; i++) {
+                                const file = files[i];
+                                const reader = new FileReader();
+                                reader.onload = function(event) {
+                                    addImageToGallery(section, event.target.result);
+                                    saveImagesToStorage();
+                                };
+                                reader.readAsDataURL(file);
+                            }
+                        }
+                    });
+                    
+                    document.body.appendChild(fileInput);
+                    fileInput.click();
+                    document.body.removeChild(fileInput);
+                });
+            });
+            
+            // HTML indirme butonu
+            downloadHtmlBtn.addEventListener('click', function() {
+                generateHTMLFile();
+            });
+            
+            // Modal kapatma butonu
+            closeModalBtn.addEventListener('click', function() {
+                downloadModal.style.display = 'none';
+            });
+            
+            // Galeriye resim ekleme fonksiyonu
+            function addImageToGallery(section, imageData) {
+                const gallery = document.getElementById(`${section}-gallery`);
+                
+                // Yeni resim öğesi oluştur
+                const galleryItem = document.createElement('div');
+                galleryItem.className = 'gallery-item';
+                
+                galleryItem.innerHTML = `
+                    <img src="${imageData}" alt="${section} resmi">
+                    <button class="delete-btn" data-section="${section}">×</button>
+                `;
+                
+                // Silme butonuna olay ekle
+                const deleteBtn = galleryItem.querySelector('.delete-btn');
+                deleteBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    gallery.removeChild(galleryItem);
+                    saveImagesToStorage();
+                });
+                
+                gallery.appendChild(galleryItem);
+            }
+            
+            // Resimleri yerel depolamaya kaydet
+            function saveImagesToStorage() {
+                const sections = ['arac', 'otel', 'yemek'];
+                const imagesData = {};
+                
+                sections.forEach(section => {
+                    const gallery = document.getElementById(`${section}-gallery`);
+                    const images = [];
+                    
+                    gallery.querySelectorAll('img').forEach(img => {
+                        images.push(img.src);
+                    });
+                    
+                    imagesData[section] = images;
+                });
+                
+                localStorage.setItem('galleryImages', JSON.stringify(imagesData));
+            }
+            
+            // Yerel depolamadan resimleri yükle
+            function loadImagesFromStorage() {
+                const savedData = localStorage.getItem('galleryImages');
+                
+                if (savedData) {
+                    const imagesData = JSON.parse(savedData);
+                    
+                    for (const section in imagesData) {
+                        imagesData[section].forEach(imgData => {
+                            addImageToGallery(section, imgData);
+                        });
+                    }
+                }
+            }
+            
+            // HTML dosyası oluştur
+            function generateHTMLFile() {
+                const sections = ['arac', 'otel', 'yemek'];
+                let imagesHTML = '';
+                
+                sections.forEach(section => {
+                    const gallery = document.getElementById(`${section}-gallery`);
+                    let sectionImagesHTML = '';
+                    
+                    gallery.querySelectorAll('img').forEach(img => {
+                        sectionImagesHTML += `
+                            <div class="gallery-item">
+                                <img src="${img.src}" alt="${section} resmi">
+                            </div>
+                        `;
+                    });
+                    
+                    const sectionTitle = 
+                        section === 'arac' ? '🚗 Araç' : 
+                        section === 'otel' ? '🏨 Otel' : '🍕 Yemek';
+                    
+                    imagesHTML += `
+                        <section id="${section}">
+                            <h2>${sectionTitle}</h2>
+                            <div class="gallery">
+                                ${sectionImagesHTML}
+                            </div>
+                        </section>
+                    `;
+                });
+                
+                const htmlContent = `<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Araç, Otel ve Yemek Galerisi</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #2c3e50, #4a6491);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        section {
+            background-color: white;
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #4a6491;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+        }
+        
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+            height: 200px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        footer {
+            background-color: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .gallery {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            h2 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Araç, Otel ve Yemek Galerisi</h1>
+        <p>Kendi resimlerinizle oluşturulmuş özel galeri</p>
+    </header>
+    
+    <div class="container">
+        ${imagesHTML}
+    </div>
+    
+    <footer>
+        <p>&copy; 2023 Araç, Otel ve Yemek Galerisi</p>
+    </footer>
+</body>
+</html>`;
+                
+                // HTML dosyasını indir
+                const blob = new Blob([htmlContent], { type: 'text/html' });
+                const url = URL.createObjectURL(blob);
+                actualDownloadBtn.href = url;
+                
+                // Modal'ı göster
+                downloadModal.style.display = 'flex';
+            }
+        });
+    </script>
+</body>
+</html>
